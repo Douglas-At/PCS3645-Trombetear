@@ -21,9 +21,9 @@ class Interface(QWidget):
         self.btnDif.clicked.connect(self.toggle_dif)
 
         self.cmbMusicas = QComboBox()
-        self.cmbMusicas.addItem("Música 1", 1)
-        self.cmbMusicas.addItem("Música 2", 2)
-        self.cmbMusicas.addItem("Música 3", 3)
+        self.cmbMusicas.addItem("Asa Branca", 1)
+        self.cmbMusicas.addItem("Solfejo", 2)
+        self.cmbMusicas.addItem("Carinhoso", 3)
         self.cmbMusicas.addItem("Música 4", 4)
         self.cmbMusicas.currentIndexChanged.connect(self.trocar_musica)
 

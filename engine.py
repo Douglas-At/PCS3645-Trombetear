@@ -20,13 +20,18 @@ class GameEngine:
         else:
             self.points -= 3
 
+        # avança índice
         self.index += 1
 
+        # se acabou a música → sinaliza e NÃO tenta acessar self.musica[self.index]
         if self.index >= len(self.musica):
-            self.index = 0
+            self.index = len(self.musica)  # trava no final
+            return "fim"   # <- SINALIZA ENCERRAMENTO
 
+        # continua normalmente
         self.target = self.musica[self.index]
         return acerto
+
 
     def trocar_musica(self, musica_id):
         self.musica_id = musica_id

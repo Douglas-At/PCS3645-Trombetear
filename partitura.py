@@ -18,12 +18,21 @@ class PartituraWidget(QWidget):
 
         # Carregar SVGs
         self.clave = QSvgRenderer(r"imagens\clave_de_sol.svg")
-        self.nota_svg = QSvgRenderer(r"imagens\nota.svg")
 
         # Controle do alvo
         self.target_nota = 1
 
         self.n_notas = round((self.x_inicial+self.width()-30)/self.espaco)
+        self.nome_notas = {
+                            1: "Dó",
+                            2: "Ré",
+                            3: "Mi",
+                            4: "Fá",
+                            5: "Sol",
+                            6: "Lá",
+                            7: "Si"
+                        }
+
 
     def set_nota(self, nota):
         self.historico.append(nota)
@@ -37,7 +46,7 @@ class PartituraWidget(QWidget):
         #pega a nota e joga na pauta
         return self.y_base + (7-nota)*9
 
-    def criar_nota(self, x, y, cor=QColor(0, 0, 0)):
+    def criar_nota(self, x, y,nota, cor=QColor(0, 0, 0)):
         qp = QPainter(self)
         largura = self.esp * 1.1
         rect = QRectF(x, y - self.esp/2, largura, self.esp)
@@ -49,6 +58,10 @@ class PartituraWidget(QWidget):
         p1 = QPointF(x + largura, y)
         p2 = QPointF(x + largura, y - self.esp * 3.5)
         qp.drawLine(p1, p2)
+
+        nome = self.nome_notas.get(nota, str(nota))
+        qp.setPen(QPen(Qt.GlobalColor.black))
+        qp.drawText(int(x), int(y + 1.5*self.esp), nome)
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -65,12 +78,18 @@ class PartituraWidget(QWidget):
         self.clave.render(qp, clave_rect)
 
         centro = (self.x_inicial+self.width()-30)/2
+        #lionha vertical estilo guitar hero 
+        qp.setPen(QPen(Qt.GlobalColor.red, 2))
+        p1 = QPointF(centro, 150-2*self.esp)
+        p2 = QPointF(centro, 150+2*self.esp)
+        qp.drawLine(p1, p2)
+        # qp.drawLine(centro, 20, centro, self.height() - 20)
 
         #porximas notas
         if hasattr(self, "engine"):
             nota_alvo = self.engine.target
             y = self.nota_to_y(nota_alvo)
-            self.criar_nota(centro, y, QColor(0, 0, 255))  # azul
+            self.criar_nota(centro, y, nota_alvo,QColor(0, 0, 255))  # azul
             musica = self.engine.musica
             idx = self.engine.index
 
@@ -78,7 +97,7 @@ class PartituraWidget(QWidget):
             for i in range(1, 6): 
                 proximo = musica[(idx + i) % len(musica)]
                 y2 = self.nota_to_y(proximo)
-                self.criar_nota(x, y2, QColor(0, 255, 0))
+                self.criar_nota(x, y2, proximo,QColor(0, 255, 0))
                 x += self.espaco
 
         #mecanismo de sifht de notas 
@@ -88,5 +107,5 @@ class PartituraWidget(QWidget):
         for idx, nota in enumerate(self.historico[-math.floor((self.n_notas-1 )/2):]):
             y = self.nota_to_y(nota)
             x = centro - (len(self.historico[-math.floor((self.n_notas-1 )/2):])- idx)*self.espaco
-            self.criar_nota(x,y)
+            self.criar_nota(x,y,nota)
             
